@@ -1,5 +1,5 @@
 import { View, Text, Image, TextInput, ScrollView } from 'react-native'
-import React, { useLayoutEffect } from 'react'
+import React, { useLayoutEffect, useState, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import {
@@ -10,14 +10,32 @@ import {
 } from 'react-native-heroicons/outline'
 import Categories from '../components/Categories'
 import FeaturedRow from '../components/FeaturedRow'
+import sanityClient from '../sanity'
 
 const HomeScreen = () => {
   const navigation = useNavigation()
+  const [featuredCategories, setFeaturedCategories] = useState([])
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
     })
+  }, [])
+
+  useEffect(() => {
+    sanityClient
+      .fetch(
+        `*[_type == "feature"] {
+            ...,
+            restaurants[]->{
+                ...,
+                dishes[]->
+            }
+        }`,
+      )
+      .then((data) => {
+        setFeaturedCategories(data)
+      })
   }, [])
   return (
     <SafeAreaView className="bg-white pt-5">
@@ -47,33 +65,25 @@ const HomeScreen = () => {
 
       {/* {Body} */}
       <ScrollView
-        className="bg-gray-100"
+        className="bg-white"
         contentContainerStyle={{ paddingBottom: 10 }}
       >
         {/* {Categories} */}
-        <Categories />
+        <View className="pb-2 bg-gray-100">
+          <Categories />
+        </View>
 
         {/* {Featured} */}
-        <FeaturedRow
-          id="1"
-          title="✨ Đề xuất"
-          description="Các đối tác của chúng tôi"
-          featuredCategory="featured"
-        />
-        {/* {Tasty Discounts} */}
-        <FeaturedRow
-          id="1"
-          title="🔥 Deal hot"
-          description="Cuối tháng, lương chưa về, không sao đã có deal giảm giá hot dành cho bạn"
-          featuredCategory="featured"
-        />
-        {/* {Offers near you } */}
-        <FeaturedRow
-          id="1"
-          title="📍 Món ngon gần bạn"
-          description="Không cần phải đi đâu xa khi gần nhà cũng có món ngon!"
-          featuredCategory="featured"
-        />
+        <View className="mt-2 bg-gray-100">
+          {featuredCategories?.map((category) => (
+            <FeaturedRow
+              key={category.id}
+              id={category.id}
+              title={category.name}
+              description={category.short_description}
+            />
+          ))}
+        </View>
       </ScrollView>
     </SafeAreaView>
   )
