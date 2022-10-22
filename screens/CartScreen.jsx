@@ -108,7 +108,10 @@ const CartScreen = () => {
             <Text className="font-bold">{cartTotal + shippingFee} vnđ</Text>
           </View>
 
-          <TouchableOpacity className="rounded-lg bg-[#7D5A50] p-4">
+          <TouchableOpacity
+            className="rounded-lg bg-[#7D5A50] p-4"
+            onPress={() => navigation.navigate('PreparingOrder')}
+          >
             <Text className="text-center text-[#FCDEC0] text-lg font-bold">
               Đặt hàng
             </Text>
