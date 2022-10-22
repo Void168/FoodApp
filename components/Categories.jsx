@@ -23,11 +23,15 @@ const Categories = () => {
     >
       {/* {Cards} */}
       {categories.map((category) => (
-        <CategoryCard
-          key={category._id}
-          imgUrl={urlFor(category.image).width(200).url()}
-          title={category.name}
-        />
+        <View className="flex-col">
+          <CategoryCard
+            key={category._id}
+            imgUrl={urlFor(category.image).width(200).url()}
+          />
+          <Text className="mt-2 text-center font-bold pr-4">
+            {category.name}
+          </Text>
+        </View>
       ))}
     </ScrollView>
   )
